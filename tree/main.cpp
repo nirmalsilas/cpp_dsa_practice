@@ -45,11 +45,12 @@ void insert(Node* &root, int val) {
 }
 
 // Inorder Traversal (Left -> Root -> Right)
-void inorderTraversal(Node* root) {
+void preorderTraversal(Node* root) {
     if (root) {
-        inorderTraversal(root->left);
         cout << root->val << " ";
-        inorderTraversal(root->right);
+        preorderTraversal(root->left);
+        
+        preorderTraversal(root->right);
     }
 }
 
@@ -68,21 +69,74 @@ Node* findLCA(Node* root, Node* p,Node* q)
 
 }
 
+void flatten(Node* root) {
+
+if(!root)return;
+flatten(root->left);
+flatten(root->right);
+
+Node* tmp = root->right;
+root->right =root->left;
+root->left =nullptr;
+Node* curr = root;
+
+while(curr->right)
+{
+    curr =curr->right;
+}
+
+curr->right = tmp;
+return ;
+        
+}
+
+vector<double> averageOfLevels(Node* root) {
+
+        std::vector<double> v{};
+        if (!root) return v;
+        std::queue<Node*> Q;
+        Q.push(root);
+
+
+        while(!Q.empty())
+        {
+            int sum=0;
+            int size = Q.size();
+            for(int i= 0;i<size;i++)
+            {
+                Node* tmp =Q.front();
+                Q.pop();
+                sum+= tmp->val;
+                if (tmp->left) Q.push(tmp->left);
+                if (tmp->right)Q.push(tmp->right);
+
+            }
+           
+
+            v.push_back(sum/size);
+
+
+
+        }
+        return v;
+}
+
 int main() {
     Node* root = nullptr;
-    int keys[] = {3, 5, 1, 6, 2, 0, 8,0, 0, 7, 4};
+    int keys[] = {3, 5, 1, 6, 2, 0, 8, 7, 4};
 
     for (int key : keys) {
         insert(root, key);
     }
 
     cout << "Inorder Traversal: ";
-    inorderTraversal(root);
+    preorderTraversal(root);
     cout << endl;
 
 
     Node* res = findLCA(root, root->left->right->right,root->left->right->left);
 
-
+    flatten(root);
+    averageOfLevels(root);
     return 0;
 }
